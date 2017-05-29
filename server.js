@@ -22,13 +22,12 @@ BlogPosts.create("Lorem", content[0], "Ipsum", "500 BCE")
 BlogPosts.create("Dolor", content[1], "Sit", "400 BCE")
 BlogPosts.create("Porta", content[2], "Finibus", "500 BCE")
 
-
 app.get('/blog-posts', (req, res) => {
   res.json(BlogPosts.get())
 })
 
 app.post('/blog-posts', (req, res) => {
-  const requiredFields = [title, content, author, publishDate]
+  const requiredFields = ['title', 'content', 'author', 'publishDate']
   for (let i=0; i<requiredFields.length; i++) {
     const field = requiredFields[i]
     if (!(field in req.body)) {
@@ -42,7 +41,7 @@ app.post('/blog-posts', (req, res) => {
   res.status(201).json(item)
 });
 
-app.put('/blog-posts', (req,res) => {
+app.put('/blog-posts/:id', (req,res) => {
 	const requiredFields = ['title', 'content', 'author', 'publishDate', 'id']
   for (let i=0; i<requiredFields.length; i++) {
     const field = requiredFields[i]
@@ -56,11 +55,40 @@ app.put('/blog-posts', (req,res) => {
   res.json(updatedPost)
 })
 
-app.delete('/blog-posts', (req, res) => {
+app.delete('/blog-posts/:id', (req, res) => {
 	BlogPosts.delete(req.body.id)
 	res.json(BlogPosts.get())
 })
 
-app.listen(process.env.PORT || 8080, () => {
-  console.log(`Your app is listening on port ${process.env.PORT || 8080}`);
-});
+let server
+
+function runServer() {
+  const port = process.env.PORT || 3000;
+  return new Promise((resolve, reject) => {
+    server = app.listen(port, () => {
+      console.log(`Your app is listening on port ${port}`);
+      resolve(server);
+    }).on('error', err => {
+      reject(err)
+    });
+  });
+}
+
+function closeServer() {
+  return new Promise((resolve, reject) => {
+    console.log('Closing server');
+    server.close(err => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve();
+    });
+  });
+}
+
+if (require.main === module) {
+  runServer().catch(err => console.error(err));
+};
+
+module.exports = {app, runServer, closeServer}

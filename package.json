@@ -4,6 +4,7 @@
   "description": "What am I about?",
   "main": "server.js",
   "scripts": {
+    "test": "mocha",
     "start": "node server.js"
   },
   "dependencies": {
@@ -25,6 +26,10 @@
     "express"
   ],
   "license": "MIT",
-  "devDependencies": {},
+  "devDependencies": {
+    "chai": "^4.0.0",
+    "chai-http": "^3.0.0",
+    "mocha": "^3.4.2"
+  },
   "author": "grades"
 }
